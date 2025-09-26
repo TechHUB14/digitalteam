@@ -1,0 +1,196 @@
+/* ===== Faculty Page Container ===== */
+.faculty-container {
+  min-height: 100vh;
+  padding: 20px;
+  font-family: "Poppins", sans-serif;
+  color: #fff;
+  background: linear-gradient(135deg, #0d0d0d, #121d2e);
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* ===== Header with Logo ===== */
+.faculty-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.faculty-header img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  transition: transform 0.4s ease;
+}
+
+.faculty-header img:hover {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.faculty-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, #4f46e5, #3b82f6, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: headerShimmer 8s ease infinite;
+}
+
+.faculty-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+@keyframes headerShimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ===== Task Form ===== */
+.task-form {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+  border-radius: 15px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.task-form h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding-bottom: 5px;
+}
+
+.task-form input,
+.task-form textarea {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.task-form input:focus,
+.task-form textarea:focus {
+  background: rgba(255,255,255,0.25);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.6);
+}
+
+.task-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* ===== Requirement Tiles ===== */
+.requirements {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.req-tile {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.req-tile.selected {
+  background: linear-gradient(135deg, #06b6d4, #3b82f6);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
+}
+
+.req-tile:hover {
+  transform: scale(1.05);
+}
+
+/* ===== Create Button ===== */
+.task-form button {
+  background: linear-gradient(135deg, #4f46e5, #3b82f6, #06b6d4);
+  border: none;
+  border-radius: 12px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.task-form button:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+}
+
+/* ===== Task List ===== */
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.task-list h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding-bottom: 5px;
+}
+
+.task-card {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+  border-radius: 12px;
+  padding: 15px;
+  transition: all 0.3s ease;
+}
+
+.task-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+}
+
+.task-card h4 {
+  margin: 0 0 5px 0;
+  font-weight: 600;
+}
+
+.task-card p {
+  margin: 3px 0;
+  font-size: 0.9rem;
+}
+
+/* Scrollbar for lists */
+.task-list, .requirements {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.task-list::-webkit-scrollbar,
+.requirements::-webkit-scrollbar {
+  width: 6px;
+}
+
+.task-list::-webkit-scrollbar-thumb,
+.requirements::-webkit-scrollbar-thumb {
+  background: rgba(59,130,246,0.5);
+  border-radius: 3px;
+}
