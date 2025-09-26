@@ -25,21 +25,23 @@ export default function Faculty() {
     "Others"
   ];
 
-  // Fetch all users to map emails -> names
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const snapshot = await getDocs(collection(db, "users"));
-      const map = {};
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.email) {
-          map[data.email] = data.name || data.email;
-        }
-      });
-      setUsersMap(map);
-    };
-    fetchUsers();
-  }, []);
+  
+// Fetch all users to map UID -> name
+useEffect(() => {
+  const fetchUsers = async () => {
+    const snapshot = await getDocs(collection(db, "users"));
+    const map = {};
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      if (doc.id) {
+        map[doc.id] = data.name || doc.id; // UID -> Name
+      }
+    });
+    setUsersMap(map);
+  };
+  fetchUsers();
+}, []);
+
 
   // Fetch all tasks
   useEffect(() => {
@@ -182,11 +184,12 @@ export default function Faculty() {
             <p><strong>Event:</strong> {task.eventName}</p>
             <p><strong>Requirements:</strong> {task.requirements?.join(", ")}</p>
             <p>
-              <strong>Assigned:</strong>{" "}
-              {task.assignedTo?.length
-                ? task.assignedTo.map(email => usersMap[email] || email).join(", ")
-                : "Unassigned"}
-            </p>
+  <strong>Assigned:</strong>{" "}
+  {task.assignedTo?.length
+    ? task.assignedTo.map(uid => usersMap[uid] || uid).join(", ")
+    : "Unassigned"}
+</p>
+
             <p><strong>Faculty:</strong> {task.facultyName} ({task.facultyContact})</p>
             <p><strong>Event Date:</strong> {task.eventDate?.toDate().toLocaleDateString()}</p>
             <p><strong>Deadline:</strong> {task.dueDate?.toDate().toLocaleDateString()}</p>
