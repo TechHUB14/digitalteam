@@ -111,15 +111,14 @@ export default function Member() {
 
   // Assign task to self (using UID)
   const assignToSelf = async (task) => {
-    const user = auth.currentUser;
-    if (!user) return;
-    const taskRef = doc(db, "tasks", task.id);
-    try {
-      await updateDoc(taskRef, { assignedTo: arrayUnion(user.uid) });
-    } catch (err) {
-      console.error("Failed to take task:", err);
-    }
-  };
+  if (!userEmail || !auth.currentUser) return;
+  const taskRef = doc(db, "tasks", task.id);
+  try {
+    await updateDoc(taskRef, { assignedTo: arrayUnion(auth.currentUser.uid) });
+  } catch (err) {
+    console.error("Failed to take task:", err);
+  }
+};
 
   // Update assignees in modal
   const updateAssignee = async () => {
