@@ -27,14 +27,14 @@ const statusLabels = {
 export default function Member() {
   const [tasks, setTasks] = useState([]);
   const [events, setEvents] = useState([]);
-  const [userUID, setUserUID] = useState("");
+  const [userUid, setUserUid] = useState("");
   const [userName, setUserName] = useState("");
   const [usersMap, setUsersMap] = useState({});
   const [selectedTask, setSelectedTask] = useState(null);
   const [newAssignees, setNewAssignees] = useState([]);
   const navigate = useNavigate();
 
-  // Fetch all users
+  // Fetch all users with role "member"
   useEffect(() => {
     const fetchUsers = async () => {
       const usersCollection = collection(db, "users");
@@ -43,17 +43,17 @@ export default function Member() {
       snapshot.forEach((doc) => {
         const data = doc.data();
         if (data.uid || doc.id) {
-          map[doc.id] = { name: data.name || data.email, role: data.role, uid: doc.id };
+          map[doc.id] = { name: data.name || doc.id, role: data.role };
         }
       });
-      // Include current user if not already
-      if (userUID && !map[userUID]) {
-        map[userUID] = { name: userName, role: "member", uid: userUID };
+      // Ensure current user is in map
+      if (userUid && !map[userUid]) {
+        map[userUid] = { name: userName, role: "member" };
       }
       setUsersMap(map);
     };
     fetchUsers();
-  }, [userUID, userName]);
+  }, [userUid, userName]);
 
   // Fetch tasks, events, and current user info
   useEffect(() => {
@@ -62,11 +62,11 @@ export default function Member() {
         navigate("/");
         return;
       }
-      setUserUID(user.uid);
+      setUserUid(user.uid);
 
       const userRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userRef);
-      setUserName(userSnap.exists() ? userSnap.data().name || user.email : user.email);
+      setUserName(userSnap.exists() ? userSnap.data().name || user.uid : user.uid);
 
       const taskQuery = query(collection(db, "tasks"), orderBy("createdAt", "desc"));
       const unsubscribeTasks = onSnapshot(taskQuery, (snapshot) => {
@@ -109,18 +109,18 @@ export default function Member() {
     }
   };
 
-  // Assign task to self (using UID)
+  // Assign task to self using UID
   const assignToSelf = async (task) => {
-  if (!userEmail || !auth.currentUser) return;
-  const taskRef = doc(db, "tasks", task.id);
-  try {
-    await updateDoc(taskRef, { assignedTo: arrayUnion(auth.currentUser.uid) });
-  } catch (err) {
-    console.error("Failed to take task:", err);
-  }
-};
+    if (!userUid) return;
+    const taskRef = doc(db, "tasks", task.id);
+    try {
+      await updateDoc(taskRef, { assignedTo: arrayUnion(userUid) });
+    } catch (err) {
+      console.error("Failed to take task:", err);
+    }
+  };
 
-  // Update assignees in modal
+  // Update assignees in modal using UID array
   const updateAssignee = async () => {
     if (!selectedTask) return;
     const taskRef = doc(db, "tasks", selectedTask.id);
@@ -171,7 +171,7 @@ export default function Member() {
             <h3>Available Tasks</h3>
             <ul>
               {tasks
-                .filter((task) => !task.assignedTo?.includes(userUID))
+                .filter((task) => !task.assignedTo?.includes(userUid))
                 .map((task) => (
                   <li key={task.id}>
                     {task.title}
@@ -186,7 +186,7 @@ export default function Member() {
             <h3>Upcoming Due Dates</h3>
             <ul>
               {tasks
-                .filter((task) => task.assignedTo?.includes(userUID) && task.dueDate)
+                .filter((task) => task.assignedTo?.includes(userUid) && task.dueDate)
                 .sort((a, b) => a.dueDate?.toDate() - b.dueDate?.toDate())
                 .slice(0, 5)
                 .map((task) => (
@@ -221,7 +221,9 @@ export default function Member() {
                 .map((task) => (
                   <li key={task.id}>
                     {task.title} - Assigned to:{" "}
-                    {task.assignedTo?.map((uid) => usersMap[uid]?.name || "Unknown").join(", ")}
+                    {task.assignedTo
+                      ?.map((uid) => usersMap[uid]?.name || "Unknown")
+                      .join(", ")}
                   </li>
                 ))}
             </ul>
@@ -238,7 +240,7 @@ export default function Member() {
                 .map((task) => (
                   <motion.div
                     key={task.id}
-                    className={`task-card ${task.assignedTo?.includes(userUID) ? "my-task" : ""}`}
+                    className={`task-card ${task.assignedTo?.includes(userUid) ? "my-task" : ""}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     whileHover={{ scale: 1.03 }}
@@ -248,7 +250,9 @@ export default function Member() {
                     <p>{task.description}</p>
                     <p>
                       Assigned To:{" "}
-                      {task.assignedTo?.map((uid) => usersMap[uid]?.name || "Unknown").join(", ")}
+                      {task.assignedTo
+                        ?.map((uid) => usersMap[uid]?.name || "Unknown")
+                        .join(", ")}
                     </p>
                     <div className="task-actions">
                       <button
@@ -314,16 +318,13 @@ export default function Member() {
                           value={uid}
                           checked={newAssignees.includes(uid)}
                           onChange={(e) => {
-                            if (e.target.checked) {
-                              setNewAssignees([...newAssignees, uid]);
-                            } else {
-                              setNewAssignees(newAssignees.filter((a) => a !== uid));
-                            }
+                            if (e.target.checked) setNewAssignees([...newAssignees, uid]);
+                            else setNewAssignees(newAssignees.filter((a) => a !== uid));
                           }}
                         />
                         {userData.name || uid}
                       </label>
-                  ))}
+                    ))}
                 </div>
                 <button style={{ marginTop: "10px" }} onClick={updateAssignee}>Update</button>
               </div>
