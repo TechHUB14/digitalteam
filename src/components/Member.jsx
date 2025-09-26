@@ -27,7 +27,7 @@ const statusLabels = {
 export default function Member() {
   const [tasks, setTasks] = useState([]);
   const [events, setEvents] = useState([]);
-  const [userEmail, setUserEmail] = useState("");
+  const [userUID, setUserUID] = useState("");
   const [userName, setUserName] = useState("");
   const [usersMap, setUsersMap] = useState({});
   const [selectedTask, setSelectedTask] = useState(null);
@@ -42,18 +42,18 @@ export default function Member() {
       const map = {};
       snapshot.forEach((doc) => {
         const data = doc.data();
-        if (data.email) {
-          map[data.email] = { name: data.name || data.email, role: data.role };
+        if (data.uid || doc.id) {
+          map[doc.id] = { name: data.name || data.email, role: data.role, uid: doc.id };
         }
       });
-      // Ensure current user is in map
-      if (userEmail && !map[userEmail]) {
-        map[userEmail] = { name: userName, role: "member" };
+      // Include current user if not already
+      if (userUID && !map[userUID]) {
+        map[userUID] = { name: userName, role: "member", uid: userUID };
       }
       setUsersMap(map);
     };
     fetchUsers();
-  }, [userEmail, userName]);
+  }, [userUID, userName]);
 
   // Fetch tasks, events, and current user info
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function Member() {
         navigate("/");
         return;
       }
-      setUserEmail(user.email);
+      setUserUID(user.uid);
 
       const userRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userRef);
@@ -109,12 +109,13 @@ export default function Member() {
     }
   };
 
-  // Assign task to self
+  // Assign task to self (using UID)
   const assignToSelf = async (task) => {
-    if (!userEmail) return;
+    const user = auth.currentUser;
+    if (!user) return;
     const taskRef = doc(db, "tasks", task.id);
     try {
-      await updateDoc(taskRef, { assignedTo: arrayUnion(userEmail) });
+      await updateDoc(taskRef, { assignedTo: arrayUnion(user.uid) });
     } catch (err) {
       console.error("Failed to take task:", err);
     }
@@ -171,7 +172,7 @@ export default function Member() {
             <h3>Available Tasks</h3>
             <ul>
               {tasks
-                .filter((task) => !task.assignedTo?.includes(userEmail))
+                .filter((task) => !task.assignedTo?.includes(userUID))
                 .map((task) => (
                   <li key={task.id}>
                     {task.title}
@@ -186,7 +187,7 @@ export default function Member() {
             <h3>Upcoming Due Dates</h3>
             <ul>
               {tasks
-                .filter((task) => task.assignedTo?.includes(userEmail) && task.dueDate)
+                .filter((task) => task.assignedTo?.includes(userUID) && task.dueDate)
                 .sort((a, b) => a.dueDate?.toDate() - b.dueDate?.toDate())
                 .slice(0, 5)
                 .map((task) => (
@@ -221,7 +222,7 @@ export default function Member() {
                 .map((task) => (
                   <li key={task.id}>
                     {task.title} - Assigned to:{" "}
-                    {task.assignedTo?.map((email) => usersMap[email]?.name || email).join(", ")}
+                    {task.assignedTo?.map((uid) => usersMap[uid]?.name || "Unknown").join(", ")}
                   </li>
                 ))}
             </ul>
@@ -238,7 +239,7 @@ export default function Member() {
                 .map((task) => (
                   <motion.div
                     key={task.id}
-                    className={`task-card ${task.assignedTo?.includes(userEmail) ? "my-task" : ""}`}
+                    className={`task-card ${task.assignedTo?.includes(userUID) ? "my-task" : ""}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     whileHover={{ scale: 1.03 }}
@@ -248,7 +249,7 @@ export default function Member() {
                     <p>{task.description}</p>
                     <p>
                       Assigned To:{" "}
-                      {task.assignedTo?.map((email) => usersMap[email]?.name || email).join(", ")}
+                      {task.assignedTo?.map((uid) => usersMap[uid]?.name || "Unknown").join(", ")}
                     </p>
                     <div className="task-actions">
                       <button
@@ -306,24 +307,24 @@ export default function Member() {
                 <strong>Change Assignees:</strong>
                 <div style={{ marginTop: "5px", maxHeight: "150px", overflowY: "auto" }}>
                   {Object.entries(usersMap)
-                    .filter(([email, userData]) => userData.role === "member")
-                    .map(([email, userData]) => (
-                      <label key={email} style={{ display: "block", marginBottom: "5px" }}>
+                    .filter(([uid, userData]) => userData.role === "member")
+                    .map(([uid, userData]) => (
+                      <label key={uid} style={{ display: "block", marginBottom: "5px" }}>
                         <input
                           type="checkbox"
-                          value={email}
-                          checked={newAssignees.includes(email)}
+                          value={uid}
+                          checked={newAssignees.includes(uid)}
                           onChange={(e) => {
                             if (e.target.checked) {
-                              setNewAssignees([...newAssignees, email]);
+                              setNewAssignees([...newAssignees, uid]);
                             } else {
-                              setNewAssignees(newAssignees.filter((a) => a !== email));
+                              setNewAssignees(newAssignees.filter((a) => a !== uid));
                             }
                           }}
                         />
-                        {userData.name || email}
+                        {userData.name || uid}
                       </label>
-                    ))}
+                  ))}
                 </div>
                 <button style={{ marginTop: "10px" }} onClick={updateAssignee}>Update</button>
               </div>
