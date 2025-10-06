@@ -57,24 +57,7 @@ background-size: cover;
   z-index: -1;
 }
 
-/* Orb animations */
-@keyframes orbMove {
-  from {
-    transform: translate(0, 0);
-  }
-  to {
-    transform: translate(200px, 150px);
-  }
-}
 
-@keyframes orbMove2 {
-  from {
-    transform: translate(0, 0) scale(1);
-  }
-  to {
-    transform: translate(-150px, -100px) scale(1.2);
-  }
-}
 
 
 /* Header Container */
@@ -111,18 +94,7 @@ background-size: cover;
   
 }
 
-/* Optional: animated gradient flow */
-@keyframes textShimmer {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
+
 
 .portal-header {
   background-size: 200% 200%;
@@ -247,3 +219,15 @@ background-size: cover;
   transform: scale(1.03);
   box-shadow: 0 8px 20px rgba(59, 130, 246, 0.5);
 }
+
+.footer,h3{
+  color: black;
+  text-align: center;
+  font-size: 11px;
+}
+ .footer{
+  background-color: white;
+  margin-top: 15px;
+  padding: 5px;
+  border-radius: 10px;
+ }

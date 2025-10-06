@@ -159,6 +159,10 @@ export const Home = () => {
           </form>
         )}
       </motion.div>
+      <div className="footer">
+      <h3>All Rights Reserved by Sri Krishna Institute of technology ©</h3>
+      <h3>Designed by Vishnu Yadav M N</h3>
+      </div>
     </div>
   );
 };
