@@ -30,11 +30,11 @@ export default function Member() {
   const [events, setEvents] = useState([]);
   const [userUid, setUserUid] = useState("");
   const [userName, setUserName] = useState("");
-  const [userRole, setUserRole] = useState(""); 
+  const [userRole, setUserRole] = useState("");
   const [usersMap, setUsersMap] = useState({});
   const [selectedTask, setSelectedTask] = useState(null);
   const [newAssignees, setNewAssignees] = useState([]);
-  
+
   const [showSettings, setShowSettings] = useState(false);
   const [newName, setNewName] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -75,7 +75,7 @@ export default function Member() {
       if (userSnap.exists()) {
         const data = userSnap.data();
         setUserName(data.name || user.uid);
-        setUserRole(data.admin || "member"); 
+        setUserRole(data.admin || "member");
       } else {
         setUserName(user.uid);
       }
@@ -165,7 +165,19 @@ export default function Member() {
           <h1>Sri Krishna Institute of Technology</h1>
           <h2>Digital Team Portal</h2>
         </div>
+
+        <div className="header-actions">
+          <motion.button
+            className="view-members-btn"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate("/team")}
+          >
+            👥 View Team Members
+          </motion.button>
+        </div>
       </div>
+
 
       <div className="member-container">
         {/* Sidebar */}
