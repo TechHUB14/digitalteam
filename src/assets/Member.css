@@ -658,3 +658,46 @@
     padding: 8px;
   }
 }
+
+/* === Common Drive Upload Section === */
+.drive-upload {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 20px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.drive-upload h3 {
+  color: #ffffff;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.drive-upload p {
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+/* Drive link button style */
+.drive-upload a {
+  display: inline-block;
+  text-decoration: none;
+  background-color: #2563eb; /* blue button */
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: none; /* removes hover transition */
+}
+
+/* Remove hover effect entirely */
+.drive-upload a:hover {
+  background-color: #2563eb; /* same as default */
+  transform: none;
+  opacity: 1;
+}

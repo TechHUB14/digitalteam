@@ -24,6 +24,9 @@ const statusLabels = {
   "in-test": "In Test",
   completed: "Completed",
 };
+const DRIVE_LINK =
+  "https://drive.google.com/drive/folders/1cmZulwAnPy4vHY4fBBzYYJPa-ZqjGvFS?usp=sharing"; // <-- replace with actual folder link
+
 
 export default function Member() {
   const [tasks, setTasks] = useState([]);
@@ -98,6 +101,9 @@ export default function Member() {
       setNewAssignees(selectedTask.assignedTo || []);
     }
   }, [selectedTask]);
+
+
+
 
   // Move task to next/prev status
   const moveTask = async (task, direction) => {
@@ -207,6 +213,16 @@ export default function Member() {
               </motion.button>
             </div>
           </motion.div>
+{/* 🔗 Common Google Drive Upload Section */}
+          <div className="sidebar-section drive-upload">
+            <h3>📸 View Uploaded Images</h3>
+            <p style={{ color: "#cbd5e1", fontSize: "0.9rem" }}>
+              Click below to open the shared Google Drive folder and upload images.
+            </p>
+            <a href={DRIVE_LINK} target="_blank" rel="noopener noreferrer">
+              Open Shared Drive
+            </a>
+          </div>
 
           {/* Available Tasks */}
           <div className="sidebar-section tasks">
