@@ -44,6 +44,65 @@ export default function Member() {
 
   const navigate = useNavigate();
 
+  // Export + Delete Completed Tasks (Admin Only)
+  const handleExportCompleted = async () => {
+    // Security check
+    if (userRole !== "admin") {
+      alert("Only admins can export or delete completed tasks.");
+      return;
+    }
+
+    const completedTasks = tasks.filter((task) => task.status === "completed");
+
+    if (completedTasks.length === 0) {
+      alert("No completed tasks to export.");
+      return;
+    }
+
+    // Convert to CSV
+    const csvHeader = "Title,Description,AssignedTo,CompletedOn\n";
+    const csvRows = completedTasks
+      .map((task) => {
+        const assignedNames = task.assignedTo
+          ?.map((uid) => usersMap[uid]?.name || "Unknown")
+          .join(" | ");
+
+        return `"${task.title}","${task.description || ""}","${assignedNames}","${task.createdAt?.toDate().toLocaleString() || ""}"`;
+      })
+      .join("\n");
+
+    const csvContent = csvHeader + csvRows;
+
+    // Create downloadable file
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `CompletedTasks_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Ask before deleting
+    const confirmDelete = window.confirm(
+      "Do you want to permanently delete all completed tasks?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      for (const task of completedTasks) {
+        await deleteDoc(doc(db, "tasks", task.id));
+      }
+      alert("All completed tasks deleted successfully.");
+    } catch (err) {
+      console.error("Error deleting tasks:", err);
+      alert("Error deleting tasks. Check console.");
+    }
+  };
+
+
+
   // Fetch all users
   useEffect(() => {
     const fetchUsers = async () => {
@@ -213,7 +272,7 @@ export default function Member() {
               </motion.button>
             </div>
           </motion.div>
-{/* 🔗 Common Google Drive Upload Section */}
+          {/* 🔗 Common Google Drive Upload Section */}
           <div className="sidebar-section drive-upload">
             <h3>📸 View Uploaded Images</h3>
             <p style={{ color: "#cbd5e1", fontSize: "0.9rem" }}>
@@ -241,12 +300,23 @@ export default function Member() {
           <div className="sidebar-section due-dates">
             <h3>Upcoming Due Dates</h3>
             <ul>
-              {tasks.filter((task) => task.dueDate).sort((a, b) => a.dueDate?.toDate() - b.dueDate?.toDate()).slice(0, 5).map((task) => (
-                <li key={task.id}>
-                  {task.title} - {task.dueDate.toDate().toLocaleDateString()}
-                  {task.assignedTo?.includes(userUid) && <span style={{ color: "#4caf50", marginLeft: "5px" }}>(Taken)</span>}
-                </li>
-              ))}
+              {tasks
+                .filter((task) => {
+                  if (!task.dueDate) return false;
+                  const now = new Date();
+                  return task.dueDate.toDate() >= now; // keep only upcoming
+                })
+                .sort((a, b) => a.dueDate.toDate() - b.dueDate.toDate())
+                .slice(0, 5)
+                .map((task) => (
+                  <li key={task.id}>
+                    {task.title} - {task.dueDate.toDate().toLocaleDateString()}
+                    {task.assignedTo?.includes(userUid) && (
+                      <span style={{ color: "#4caf50", marginLeft: "5px" }}>(Taken)</span>
+                    )}
+                  </li>
+                ))}
+
             </ul>
           </div>
 
@@ -255,14 +325,25 @@ export default function Member() {
             <h3>Upcoming Events</h3>
             {tasks.some((task) => task.eventDate) ? (
               <ul>
-                {tasks.filter((task) => task.eventDate).sort((a, b) => a.eventDate?.toDate() - b.eventDate?.toDate()).map((task) => (
-                  <li key={task.id}>
-                    {task.title || task.eventName || "Untitled"} – {task.eventDate.toDate().toLocaleDateString()}
-                  </li>
-                ))}
+                {tasks
+                  .filter((task) => {
+                    if (!task.eventDate) return false;
+                    const now = new Date();
+                    return task.eventDate.toDate() >= now; // show only upcoming
+                  })
+                  .sort((a, b) => a.eventDate.toDate() - b.eventDate.toDate())
+                  .map((task) => (
+                    <li key={task.id}>
+                      {task.title || task.eventName || "Untitled"} –{" "}
+                      {task.eventDate.toDate().toLocaleDateString()}
+                    </li>
+                  ))}
               </ul>
-            ) : (<p>No events found.</p>)}
+            ) : (
+              <p>No events found.</p>
+            )}
           </div>
+
 
           {/* Completed Tasks */}
           <div className="sidebar-section completed-tasks">
@@ -281,6 +362,17 @@ export default function Member() {
         <div className="board">
           {statuses.map((status) => (
             <div key={status} className="column">
+              {status === "completed" && userRole === "admin" && (
+                <button
+                  className="export-btn"
+                  onClick={handleExportCompleted}
+                  style={{ marginBottom: "10px", padding: "6px", cursor: "pointer" }}
+                >
+                  ⬇️ Export & Delete Completed Tasks
+                </button>
+              )}
+
+
               <h4>{statusLabels[status]}</h4>
               {tasks.filter((task) => task.status === status).map((task) => (
                 <motion.div key={task.id} className={`task-card ${task.assignedTo?.includes(userUid) ? "my-task" : ""}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} whileHover={{ scale: 1.03 }} onClick={() => setSelectedTask(task)}>
