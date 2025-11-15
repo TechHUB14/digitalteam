@@ -31,6 +31,8 @@ export default function Faculty() {
   const [facultyContact, setFacultyContact] = useState("");
   const [editMode, setEditMode] = useState(false);
   const [editTaskId, setEditTaskId] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
+
 
   const navigate = useNavigate();
 
@@ -169,7 +171,7 @@ export default function Faculty() {
         </button>
       </div>
 
-      
+
 
       {/* Task Creation Form */}
       <div className="task-form">
@@ -180,11 +182,16 @@ export default function Faculty() {
           onChange={(e) => setFacultyName(e.target.value)}
         />
         <input
-          type="number"
-          placeholder="Faculty Contact"
-          value={facultyContact}
-          onChange={(e) => setFacultyContact(e.target.value)}
-        />
+  type="tel"
+  placeholder="Faculty Contact (10 digits)"
+  value={facultyContact}
+  onChange={(e) => {
+    const onlyNumbers = e.target.value.replace(/\D/g, ""); // remove non-digits
+    setFacultyContact(onlyNumbers);
+  }}
+  maxLength={10}
+/>
+
         <input
           placeholder="Title"
           value={title}
@@ -200,18 +207,23 @@ export default function Faculty() {
           value={eventName}
           onChange={(e) => setEventName(e.target.value)}
         />
+
         <input
-          type="date"
+          type={eventDate ? "date" : "text"}
           placeholder="Event Date"
+          onFocus={(e) => (e.target.type = "date")}
           value={eventDate}
           onChange={(e) => setEventDate(e.target.value)}
         />
+
         <input
-          type="date"
-          placeholder="Deadline"
+          type={deadline ? "date" : "text"}
+          placeholder="Deadline Date"
+          onFocus={(e) => (e.target.type = "date")}
           value={deadline}
           onChange={(e) => setDeadline(e.target.value)}
         />
+
 
         {/* Requirements */}
         <div className="requirements">
@@ -227,20 +239,16 @@ export default function Faculty() {
         </div>
 
         <div className="form-buttons">
-          <button onClick={editMode ? updateTask : createTask}>
-            {editMode ? "Update Task" : "Create Task"}
-          </button>
-          {editMode && (
-            <button className="cancel-btn" onClick={resetForm}>
-              Cancel
-            </button>
-          )}
+          <button onClick={() => setShowPreview(true)}>
+  Preview Task
+</button>
+
         </div>
       </div>
       {/* 🔹 Common Upload Section */}
       <div className="upload-section">
         <h3>📸 Upload Required Images</h3>
-        <p>Click below to upload photos or videos to the shared Google Drive folder.</p>
+        <p>Click below to upload photos or videos to the shared Google Drive folder, For Access Contact Maruthish</p>
         <button
           className="upload-btn"
           onClick={() => window.open(DRIVE_UPLOAD_LINK, "_blank")}
@@ -276,6 +284,41 @@ export default function Faculty() {
           </div>
         ))}
       </div>
+      {showPreview && (
+  <div className="preview-overlay">
+    <div className="preview-box">
+
+      <h2>Task Preview</h2>
+
+      <p><strong>Faculty Name:</strong> {facultyName || "Not Provided"}</p>
+<p><strong>Task Title:</strong> {title || "Not Provided"}</p>
+<p><strong>Event Name:</strong> {eventName || "Not Provided"}</p>
+<p><strong>Event Date:</strong> {eventDate || "Not Selected"}</p>
+<p><strong>Deadline:</strong> {deadline || "Not Selected"}</p>
+<p><strong>Description:</strong> {description || "Not Provided"}</p>
+<p><strong>Requirements:</strong> 
+  {requirements.length > 0 ? requirements.join(", ") : "None"}
+</p>
+<p><strong>Contact:</strong> {facultyContact || "Not Provided"}</p>
+
+
+      <div className="preview-actions">
+        <button onClick={() => setShowPreview(false)} className="edit-btn">Edit</button>
+
+        <button
+          className="confirm-btn"
+          onClick={() => {
+            createTask();     // ← your existing function
+            setShowPreview(false);
+          }}
+        >
+          Confirm & Create
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

@@ -41,17 +41,17 @@ export const Team = () => {
       <div className="team-header">
         <h1>⚡ Digital Team Members ⚡</h1>
         <p>Meet the innovators powering our tech world</p>
-          <motion.button
-        className="back-btn"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => navigate("/member-dashboard")}
-      >
-        ⬅ Back to Dashboard
-      </motion.button>
+        <motion.button
+          className="back-btn"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => navigate("/member-dashboard")}
+        >
+          ⬅ Back to Dashboard
+        </motion.button>
       </div>
 
-    
+
       <motion.div
         className="team-grid"
         initial={{ opacity: 0 }}
@@ -72,7 +72,9 @@ export const Team = () => {
                 <span>{member.name?.charAt(0)?.toUpperCase() || "?"}</span>
               </div>
               <h3>{member.name || "Unnamed Member"}</h3>
-              <p className="role">{member.role?.toUpperCase() || "MEMBER"}</p>
+              <p className="role">
+                {member.admin === "admin" ? "ADMIN" : "MEMBER"}
+              </p>
             </motion.div>
           ))
         ) : (
@@ -80,9 +82,10 @@ export const Team = () => {
             No members found.
           </p>
         )}
+
       </motion.div>
 
-      
+
     </div>
   );
 };

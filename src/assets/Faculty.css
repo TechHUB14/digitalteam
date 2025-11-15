@@ -253,3 +253,48 @@
   transform: scale(1.05);
   box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
 }
+
+.preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.preview-box {
+  width: 90%;
+  max-width: 420px;
+  background: #030303;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.preview-box h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.preview-box p {
+  margin: 8px 0;
+}
+
+.preview-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.confirm-btn {
+  background: #4caf50;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
