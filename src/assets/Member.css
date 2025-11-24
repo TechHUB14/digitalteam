@@ -701,3 +701,276 @@
   transform: none;
   opacity: 1;
 }
+
+/* ============================================
+   PREMIUM MODAL BACKDROP
+============================================ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px) brightness(0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  z-index: 999;
+  animation: fadeIn 0.25s ease-out;
+}
+
+/* ============================================
+   MODAL CARD (GLASS)
+============================================ */
+.modal-content {
+  width: 100%;
+  max-width: 480px;
+
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(25px) saturate(180%);
+  border-radius: 18px;
+  padding: 25px;
+
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.25),
+    0 0 0 1.5px rgba(255, 255, 255, 0.2) inset;
+
+  animation: popUp 0.30s ease-out;
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 18px;
+    border-radius: 14px;
+  }
+}
+
+.modal-content h3 {
+  text-align: center;
+  font-size: 1.55rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================
+   INPUTS + TEXTAREA
+============================================ */
+.task-form input,
+.task-form textarea {
+  width: 100%;
+  padding: 14px 10px;
+
+  border-radius: 12px;
+  border: none;
+
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+
+  margin-bottom: 14px;
+  font-size: 0.95rem;
+  transition: 0.25s ease;
+
+  backdrop-filter: blur(4px);
+}
+
+.task-form input::placeholder,
+.task-form textarea::placeholder {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.task-form input:focus,
+.task-form textarea:focus {
+  outline: none;
+
+  background: rgba(255, 255, 255, 0.32);
+  box-shadow: 0 0 10px rgba(78, 142, 255, 0.6);
+}
+
+/* ============================================
+   REQUIREMENT TILES
+============================================ */
+.requirements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0 20px;
+}
+
+.req-tile {
+  padding: 10px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.82rem;
+
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: 0.25s ease, transform 0.15s ease;
+}
+
+.req-tile:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.req-tile.selected {
+  background: rgba(75, 140, 247, 0.9);
+  border-color: rgba(75, 140, 247, 1);
+  box-shadow: 0 0 12px rgba(75, 140, 247, 0.7);
+  transform: scale(1.05);
+}
+
+/* ============================================
+   FORM BUTTONS (PREMIUM)
+============================================ */
+.form-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.form-buttons button {
+  flex: 1;
+  padding: 14px 0;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: 0.25s ease;
+  letter-spacing: 0.5px;
+}
+
+.form-buttons button:first-child {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+}
+
+.form-buttons button:first-child:hover {
+  background: linear-gradient(135deg, #3f8f42, #37853a);
+  transform: translateY(-2px);
+}
+
+.form-buttons button:last-child {
+  background: linear-gradient(135deg, #FF4C4C, #E63939);
+  color: white;
+}
+
+.form-buttons button:last-child:hover {
+  background: linear-gradient(135deg, #d73737, #c53030);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   DARK MODE SUPPORT
+============================================ */
+@media (prefers-color-scheme: dark) {
+  .modal-content {
+    background: rgba(33, 33, 33, 0.6);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .task-form input,
+  .task-form textarea {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* ============================================
+   ANIMATIONS
+============================================ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popUp {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+/* ============================================
+   RESPONSIVE DESIGN — MOBILE FIRST
+============================================ */
+
+/* Small phones (up to 380px) */
+@media (max-width: 380px) {
+  .modal-content {
+    max-width: 95%;
+    padding: 14px;
+  }
+
+  .modal-content h3 {
+    font-size: 1.25rem;
+  }
+
+  .task-form input,
+  .task-form textarea {
+    padding: 12px;
+    font-size: 0.85rem;
+  }
+
+  .req-tile {
+    padding: 8px 10px;
+    font-size: 0.75rem;
+  }
+
+  .form-buttons button {
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Regular phones (381px–480px) */
+@media (max-width: 480px) {
+  .modal-content {
+    max-width: 92%;
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .requirements {
+    gap: 8px;
+  }
+
+  .req-tile {
+    padding: 9px 12px;
+  }
+
+  .task-form textarea {
+    min-height: 70px;
+  }
+}
+
+/* Tablets (481px–768px) */
+@media (max-width: 768px) {
+  .modal-content {
+    max-width: 480px;
+    padding: 20px;
+  }
+
+  .task-form input,
+  .task-form textarea {
+    font-size: 0.95rem;
+  }
+
+  .form-buttons {
+    gap: 10px;
+  }
+}
+
+/* Large screens (1200px+) — center tighter */
+@media (min-width: 1200px) {
+  .modal-content {
+    max-width: 460px;
+  }
+}

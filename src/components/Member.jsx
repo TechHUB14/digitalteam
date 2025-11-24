@@ -11,6 +11,7 @@ import {
   getDocs,
   getDoc,
   deleteDoc,
+  addDoc,
 } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +29,25 @@ const DRIVE_LINK =
   "https://drive.google.com/drive/folders/1cmZulwAnPy4vHY4fBBzYYJPa-ZqjGvFS?usp=sharing"; // <-- replace with actual folder link
 
 
+
 export default function Member() {
+const [showCreateModal, setShowCreateModal] = useState(false);
+
+const [facultyName, setFacultyName] = useState("");
+const [facultyContact, setFacultyContact] = useState("");
+const [title, setTitle] = useState("");
+const [description, setDescription] = useState("");
+const [eventName, setEventName] = useState("");
+const [eventDate, setEventDate] = useState("");
+const [deadline, setDeadline] = useState("");
+const [requirements, setRequirements] = useState([]);
+
+const requirementOptions = ["Poster", "Photography", "Videography", "Editing"];
+
+
+
+
+
   const [tasks, setTasks] = useState([]);
   const [events, setEvents] = useState([]);
   const [userUid, setUserUid] = useState("");
@@ -221,6 +240,47 @@ export default function Member() {
     }
   };
 
+  const saveNewTask = async () => {
+    if (!title) {
+      alert("Title is required");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "tasks"), {
+        facultyName,
+        facultyContact,
+        title,
+        description,
+        eventName,
+        eventDate: eventDate ? new Date(eventDate) : null,
+        dueDate: deadline ? new Date(deadline) : null,
+        requirements: requirements || [],
+        assignedTo: [],
+        status: "todo",
+        createdAt: new Date(),
+      });
+
+      alert("Task created successfully!");
+
+      // Reset form
+      setFacultyName("");
+      setFacultyContact("");
+      setTitle("");
+      setDescription("");
+      setEventName("");
+      setEventDate("");
+      setDeadline("");
+      setRequirements([]);
+
+      setShowCreateModal(false);
+    } catch (err) {
+      console.error("Error creating task:", err);
+      alert("Failed to create task.");
+    }
+  };
+
+
   return (
     <div className="member-page">
       {/* Header */}
@@ -252,25 +312,55 @@ export default function Member() {
             <div className="profile-header">
               <div>
                 <h3 className="profile-name">{userName || "Member"}</h3>
-                <p className="profile-role">{usersMap[userUid]?.role?.toUpperCase() || "MEMBER"}</p>
+                <p className="profile-role">
+  {usersMap[userUid]?.admin ? "ADMIN" : 
+   (usersMap[userUid]?.role?.toUpperCase() || "MEMBER")}
+</p>
+
+
               </div>
             </div>
 
             <div className="profile-actions">
-              <motion.button className="profile-btn settings" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setShowSettings(true)}>
+              <motion.button
+                className="profile-btn settings"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowSettings(true)}
+              >
                 ⚙️ Settings
               </motion.button>
 
-              <motion.button className="profile-btn logout" whileHover={{ scale: 1.05, backgroundColor: "#ff4d4d" }} whileTap={{ scale: 0.95 }} onClick={async () => {
-                const confirmLogout = window.confirm("Are you sure you want to logout?");
-                if (confirmLogout) {
-                  await auth.signOut();
-                  navigate("/");
-                }
-              }}>
+              {/* ➕ Create Task (Admin Only) */}
+              {userRole === "admin" && (
+                <motion.button
+                  className="profile-btn create-task"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowCreateModal(true)}
+                  style={{ backgroundColor: "#4caf50", color: "white", marginTop: "10px" }}
+                >
+                  ➕ Create Task
+                </motion.button>
+              )}
+
+
+              <motion.button
+                className="profile-btn logout"
+                whileHover={{ scale: 1.05, backgroundColor: "#ff4d4d" }}
+                whileTap={{ scale: 0.95 }}
+                onClick={async () => {
+                  const confirmLogout = window.confirm("Are you sure you want to logout?");
+                  if (confirmLogout) {
+                    await auth.signOut();
+                    navigate("/");
+                  }
+                }}
+              >
                 🚪 Logout
               </motion.button>
             </div>
+
           </motion.div>
           {/* 🔗 Common Google Drive Upload Section */}
           <div className="sidebar-section drive-upload">
@@ -480,6 +570,107 @@ export default function Member() {
           </motion.div>
         )}
       </AnimatePresence>
+      <AnimatePresence>
+        {showCreateModal && (
+          <motion.div
+            className="modal-backdrop"
+            onClick={() => setShowCreateModal(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+
+            <motion.div
+              className="modal-content"
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              style={{ maxHeight: "90vh", overflowY: "auto" }}
+            >
+              <h3>Create Task</h3>
+
+              <div className="task-form">
+                <input
+                  placeholder="Faculty Name"
+                  value={facultyName}
+                  onChange={(e) => setFacultyName(e.target.value)}
+                />
+
+                <input
+                  type="tel"
+                  placeholder="Faculty Contact (10 digits)"
+                  value={facultyContact}
+                  onChange={(e) => {
+                    const onlyNumbers = e.target.value.replace(/\D/g, "");
+                    setFacultyContact(onlyNumbers);
+                  }}
+                  maxLength={10}
+                />
+
+                <input
+                  placeholder="Title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+
+                <textarea
+                  placeholder="Description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+
+                <input
+                  placeholder="Event Name"
+                  value={eventName}
+                  onChange={(e) => setEventName(e.target.value)}
+                />
+
+                <input
+                  type={eventDate ? "date" : "text"}
+                  placeholder="Event Date"
+                  onFocus={(e) => (e.target.type = "date")}
+                  value={eventDate}
+                  onChange={(e) => setEventDate(e.target.value)}
+                />
+
+                <input
+                  type={deadline ? "date" : "text"}
+                  placeholder="Deadline"
+                  onFocus={(e) => (e.target.type = "date")}
+                  value={deadline}
+                  onChange={(e) => setDeadline(e.target.value)}
+                />
+
+                {/* Requirements */}
+                <div className="requirements">
+                  {requirementOptions.map((req) => (
+                    <div
+                      key={req}
+                      className={`req-tile ${requirements.includes(req) ? "selected" : ""}`}
+                      onClick={() => {
+                        if (requirements.includes(req)) {
+                          setRequirements(requirements.filter((r) => r !== req));
+                        } else {
+                          setRequirements([...requirements, req]);
+                        }
+                      }}
+                    >
+                      {req}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="form-buttons">
+                  <button onClick={saveNewTask}>Save Task</button>
+                  <button onClick={() => setShowCreateModal(false)}>Cancel</button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }

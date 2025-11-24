@@ -182,15 +182,15 @@ export default function Faculty() {
           onChange={(e) => setFacultyName(e.target.value)}
         />
         <input
-  type="tel"
-  placeholder="Faculty Contact (10 digits)"
-  value={facultyContact}
-  onChange={(e) => {
-    const onlyNumbers = e.target.value.replace(/\D/g, ""); // remove non-digits
-    setFacultyContact(onlyNumbers);
-  }}
-  maxLength={10}
-/>
+          type="tel"
+          placeholder="Faculty Contact (10 digits)"
+          value={facultyContact}
+          onChange={(e) => {
+            const onlyNumbers = e.target.value.replace(/\D/g, ""); // remove non-digits
+            setFacultyContact(onlyNumbers);
+          }}
+          maxLength={10}
+        />
 
         <input
           placeholder="Title"
@@ -240,8 +240,8 @@ export default function Faculty() {
 
         <div className="form-buttons">
           <button onClick={() => setShowPreview(true)}>
-  Preview Task
-</button>
+            Preview Task
+          </button>
 
         </div>
       </div>
@@ -285,39 +285,39 @@ export default function Faculty() {
         ))}
       </div>
       {showPreview && (
-  <div className="preview-overlay">
-    <div className="preview-box">
+        <div className="preview-overlay">
+          <div className="preview-box">
 
-      <h2>Task Preview</h2>
+            <h2>Task Preview</h2>
 
-      <p><strong>Faculty Name:</strong> {facultyName || "Not Provided"}</p>
-<p><strong>Task Title:</strong> {title || "Not Provided"}</p>
-<p><strong>Event Name:</strong> {eventName || "Not Provided"}</p>
-<p><strong>Event Date:</strong> {eventDate || "Not Selected"}</p>
-<p><strong>Deadline:</strong> {deadline || "Not Selected"}</p>
-<p><strong>Description:</strong> {description || "Not Provided"}</p>
-<p><strong>Requirements:</strong> 
-  {requirements.length > 0 ? requirements.join(", ") : "None"}
-</p>
-<p><strong>Contact:</strong> {facultyContact || "Not Provided"}</p>
+            <p><strong>Faculty Name:</strong> {facultyName || "Not Provided"}</p>
+            <p><strong>Task Title:</strong> {title || "Not Provided"}</p>
+            <p><strong>Event Name:</strong> {eventName || "Not Provided"}</p>
+            <p><strong>Event Date:</strong> {eventDate || "Not Selected"}</p>
+            <p><strong>Deadline:</strong> {deadline || "Not Selected"}</p>
+            <p><strong>Description:</strong> {description || "Not Provided"}</p>
+            <p><strong>Requirements:</strong>
+              {requirements.length > 0 ? requirements.join(", ") : "None"}
+            </p>
+            <p><strong>Contact:</strong> {facultyContact || "Not Provided"}</p>
 
 
-      <div className="preview-actions">
-        <button onClick={() => setShowPreview(false)} className="edit-btn">Edit</button>
+            <div className="preview-actions">
+              <button onClick={() => setShowPreview(false)} className="edit-btn">Edit</button>
 
-        <button
-          className="confirm-btn"
-          onClick={() => {
-            createTask();     // ← your existing function
-            setShowPreview(false);
-          }}
-        >
-          Confirm & Create
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+              <button
+                className="confirm-btn"
+                onClick={() => {
+                  createTask();     // ← your existing function
+                  setShowPreview(false);
+                }}
+              >
+                Confirm & Create
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
