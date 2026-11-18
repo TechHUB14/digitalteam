@@ -31,18 +31,18 @@ const DRIVE_LINK =
 
 
 export default function Member() {
-const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
-const [facultyName, setFacultyName] = useState("");
-const [facultyContact, setFacultyContact] = useState("");
-const [title, setTitle] = useState("");
-const [description, setDescription] = useState("");
-const [eventName, setEventName] = useState("");
-const [eventDate, setEventDate] = useState("");
-const [deadline, setDeadline] = useState("");
-const [requirements, setRequirements] = useState([]);
+  const [facultyName, setFacultyName] = useState("");
+  const [facultyContact, setFacultyContact] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [eventName, setEventName] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [requirements, setRequirements] = useState([]);
 
-const requirementOptions = ["Poster", "Photography", "Videography", "Editing"];
+  const requirementOptions = ["Poster", "Photography", "Videography", "Editing"];
 
 
 
@@ -300,6 +300,18 @@ const requirementOptions = ["Poster", "Photography", "Videography", "Editing"];
           >
             👥 View Team Members
           </motion.button>
+          <motion.button
+            className="points-btn"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate("/points")}
+          >
+            📊 Performance Hub
+          </motion.button>
+
+
+
+
         </div>
       </div>
 
@@ -313,9 +325,9 @@ const requirementOptions = ["Poster", "Photography", "Videography", "Editing"];
               <div>
                 <h3 className="profile-name">{userName || "Member"}</h3>
                 <p className="profile-role">
-  {usersMap[userUid]?.admin ? "ADMIN" : 
-   (usersMap[userUid]?.role?.toUpperCase() || "MEMBER")}
-</p>
+                  {usersMap[userUid]?.admin ? "ADMIN" :
+                    (usersMap[userUid]?.role?.toUpperCase() || "MEMBER")}
+                </p>
 
 
               </div>
